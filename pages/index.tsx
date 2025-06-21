@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Header from "../component/Header";
 import Mint from "../component/Mint";
 import NFTGallery from "./NFTGallery";
