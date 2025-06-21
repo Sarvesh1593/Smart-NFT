@@ -17,7 +17,10 @@ interface ListedNFT {
 export default function ListNFT() {
   const client = usePublicClient();
   const chainId = useChainId();
-  const contractAddr = (contractAddress as any)[chainId.toString()]?.[0];
+  const contractAddr = (contractAddress as Record<string, string[]>)[
+    chainId.toString()
+  ]?.[0];
+
   const [listedNfts, setListedNfts] = useState<ListedNFT[]>([]);
   const { writeContract } = useWriteContract();
 
@@ -25,7 +28,7 @@ export default function ListNFT() {
     const fetchListings = async () => {
       try {
         const [ids, prices, seller] = (await client?.readContract({
-          address: contractAddr,
+          address: contractAddr as `0x${string}`,
           abi: abi,
           functionName: "getAllListings",
           args: [],
@@ -36,7 +39,7 @@ export default function ListNFT() {
         for (let i = 0; i < ids.length; i++) {
           const tokenId = Number(ids[i]);
           const tokenURI = (await client?.readContract({
-            address: contractAddr,
+            address: contractAddr as `0x${string}`,
             abi,
             functionName: "tokenURI",
             args: [BigInt(tokenId)],
@@ -93,7 +96,7 @@ export default function ListNFT() {
                   console.log("Attempting to buy:", { tokenId, value });
 
                   const result = await writeContract({
-                    address: contractAddr,
+                    address: contractAddr as `0x${string}`,
                     abi,
                     functionName: "buyItem",
                     args: [tokenId],

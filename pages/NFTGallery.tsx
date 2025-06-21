@@ -18,7 +18,9 @@ export default function NFTGallery() {
   >([]);
 
   const chainId = useChainId(); // Already a number
-  const contractaddress = (contractAddress as any)[chainId.toString()]?.[0];
+  const contractAddr = (contractAddress as Record<string, string[]>)[
+    chainId.toString()
+  ]?.[0];
 
   useEffect(() => {
     const fetchNFTs = async () => {
@@ -26,7 +28,7 @@ export default function NFTGallery() {
 
       const nftList = [];
       const tokenIds = (await client?.readContract({
-        address: contractaddress,
+        address: contractAddr as `0x${string}`,
         abi,
         functionName: "getAllTokenIds",
         args: [],
@@ -35,7 +37,7 @@ export default function NFTGallery() {
       for (let tokenId = 0; tokenId < tokenIds.length; tokenId++) {
         try {
           const owner = (await client?.readContract({
-            address: contractaddress,
+            address: contractAddr as `0x${string}`,
             abi: abi,
             functionName: "ownerOf",
             args: [BigInt(tokenId)],
@@ -44,7 +46,7 @@ export default function NFTGallery() {
           if (owner.toLowerCase() !== userAddress.toLowerCase()) continue;
 
           const tokenURI = (await client?.readContract({
-            address: contractaddress,
+            address: contractAddr as `0x${string}`,
             abi: abi,
             functionName: "tokenURI",
             args: [BigInt(tokenId)],
@@ -75,10 +77,10 @@ export default function NFTGallery() {
       setNfts(nftList);
     };
 
-    if (client && contractaddress && userAddress) {
+    if (client && contractAddr && userAddress) {
       fetchNFTs();
     }
-  }, [client, contractaddress, userAddress]);
+  }, [client, contractAddr, userAddress]);
   // ✅ Only run when client or address changes
 
   return (
